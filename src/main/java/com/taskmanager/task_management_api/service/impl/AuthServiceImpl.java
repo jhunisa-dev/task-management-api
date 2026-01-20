@@ -54,7 +54,14 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        String token = jwtUtil.generateToken(request.getUsername());
+        // Fetch the user from your database first
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Now pass the WHOLE user object, not just the string
+        String token = jwtUtil.generateToken(user);
+
+//        String token = jwtUtil.generateToken(user);
         return new AuthResponse(token);
     }
 }
