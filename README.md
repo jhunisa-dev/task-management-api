@@ -28,30 +28,30 @@ A robust RESTful API built with Java and Spring Boot to manage users and tasks. 
    
 2. **Configure the Database (Microsoft SQL Server):**
   Ensure your SQL Server instance is running. The application uses the following src/main/resources/application.yaml configuration. Update the username and password if your local setup differs:
-```bash
-  spring:
-  application:
-    name: task-management-api
-  datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=TaskManagementDB;encrypt=false
-    username: sa
-    password: 123
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect
-  springdoc:
-    api-docs:
-      path: /api-docs
-    swagger-ui:
-      path: /swagger-ui.html
-      operations-sorter: alpha
-      tags-sorter: alpha
-    show-actuator: true
+ ```bash
+   spring:
+   application:
+     name: task-management-api
+   datasource:
+     url: jdbc:sqlserver://localhost:1433;databaseName=TaskManagementDB;encrypt=false
+     username: sa
+     password: 123
+     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+   jpa:
+     hibernate:
+       ddl-auto: update
+     show-sql: true
+     properties:
+       hibernate:
+         dialect: org.hibernate.dialect.SQLServerDialect
+   springdoc:
+     api-docs:
+       path: /api-docs
+     swagger-ui:
+       path: /swagger-ui.html
+       operations-sorter: alpha
+       tags-sorter: alpha
+     show-actuator: true
 
 3. **📚 API Documentation (Swagger)**
    Once the application is running, you can interact with the API endpoints and view the full documentation via Swagger UI.
