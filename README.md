@@ -68,11 +68,14 @@ http://localhost:8080
 ```
 
 ## 📚 API Documentation (Swagger)
-Once the application is running, you can interact with the API endpoints and explore the full documentation using **Swagger UI**.
+Once the application is running, you can interact with the API endpoints and explore the full documentation using
 
 **Swagger UI:**  
 ```
 http://localhost:8080/swagger-ui.html
 ```
 
-   
+## 📸 Screenshots
+```markdown
+![Swagger UI](screenshots/swagger-ui.png)
+```
