@@ -77,5 +77,7 @@ http://localhost:8080/swagger-ui.html
 
 ## 📸 Screenshots
 ```markdown
-![Swagger UI](screenshots/swagger-ui.png)
+<p align="center">
+  <img src="screenshots/swagger-ui.png" width="800"/>
+</p>
 ```
