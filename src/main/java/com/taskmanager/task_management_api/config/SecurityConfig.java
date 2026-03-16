@@ -42,7 +42,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/swagger-ui.html", // Explicitly allow the HTML page
+                                "/v3/api-docs/**",  // Keep default just in case
+                                "/api-docs/**"      // Add your custom YAML path
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
