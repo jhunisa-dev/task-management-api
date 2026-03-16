@@ -77,5 +77,5 @@ http://localhost:8080/swagger-ui.html
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="screenshots/swagger-ui.png" width="900">
+  <img src="screenshot/swagger-ui.png" width="900">
 </p>
