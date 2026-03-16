@@ -52,8 +52,27 @@ A robust RESTful API built with Java and Spring Boot to manage users and tasks. 
        operations-sorter: alpha
        tags-sorter: alpha
      show-actuator: true
+```
 
-3. **📚 API Documentation (Swagger)**
-   Once the application is running, you can interact with the API endpoints and view the full documentation via Swagger UI.
-   Swagger UI: http://localhost:8080/swagger-ui.html
+---
+
+## ▶️ Running the Application
+Run the project using Maven:
+```bash
+mvn spring-boot:run
+```
+
+The server will start at:
+```
+http://localhost:8080
+```
+
+## 📚 API Documentation (Swagger)
+Once the application is running, you can interact with the API endpoints and explore the full documentation using **Swagger UI**.
+
+**Swagger UI:**  
+```
+http://localhost:8080/swagger-ui.html
+```
+
    
