@@ -75,7 +75,7 @@ Once the application is running, you can interact with the API endpoints and exp
 http://localhost:8080/swagger-ui.html
 ```
 
-## 📸 Screenshots
+## 📸 Screenshot
 <p align="center">
   <img src="screenshot/swagger-ui.png" width="900">
 </p>
