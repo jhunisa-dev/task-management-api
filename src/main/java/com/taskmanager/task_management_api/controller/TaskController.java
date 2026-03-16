@@ -8,6 +8,9 @@ import com.taskmanager.task_management_api.service.TaskService;
 import com.taskmanager.task_management_api.util.SecurityUtil;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,16 +54,25 @@ public class TaskController {
         return taskService.createTask(request, getCurrentUserId());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @taskSecurity.isOwner(#id)")
     @PutMapping("/{id}")
     public TaskResponse updateTask(
-            @PathVariable Long id,
+            @PathVariable("id") Long id, // <--- Add "id" here
             @Valid @RequestBody TaskRequest request) {
         return taskService.updateTask(id, request, getCurrentUserId());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @taskSecurity.isOwner(#id)")
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public void deleteTask(@PathVariable("id") Long id) { // <--- Add "id" here
         taskService.deleteTask(id, getCurrentUserId());
+    }
+
+    @GetMapping("/debug-me")
+    public void debugUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("User: " + auth.getName());
+        System.out.println("Authorities: " + auth.getAuthorities());
     }
 }
 

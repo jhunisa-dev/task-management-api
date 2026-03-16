@@ -12,10 +12,12 @@ import com.taskmanager.task_management_api.repository.UserRepository;
 import com.taskmanager.task_management_api.service.TaskService;
 import com.taskmanager.task_management_api.util.DateUtil;
 import com.taskmanager.task_management_api.util.RoleUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
@@ -41,6 +43,8 @@ public class TaskServiceImpl implements TaskService {
                 .dueDate(task.getDueDate())
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
+                .assignedUserId(task.getUser().getId()) // Map ID
+                .assignedUsername(task.getUser().getUsername()) // Map Name
                 .build();
     }
 
@@ -77,18 +81,24 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse createTask(TaskRequest request, Long userId) {
+        User targetUser;
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Logic: Admin can assign to others. Regular users assign to themselves.
+        if (RoleUtil.isAdmin() && request.getAssignedUserId() != null) {
+            targetUser = userRepository.findById(request.getAssignedUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Assigned user not found"));
+        } else {
+            targetUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
 
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-        task.setStatus(
-                request.getStatus() != null ? request.getStatus() : TaskStatus.TODO
-        );
+        // Fix for 500 Error: Handle null status
+        task.setStatus(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO);
         task.setDueDate(request.getDueDate());
-        task.setUser(user);
+        task.setUser(targetUser);
         task.setCreatedAt(DateUtil.now());
 
         return mapToResponse(taskRepository.save(task));
@@ -96,18 +106,27 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse updateTask(Long taskId, TaskRequest request, Long userId) {
-
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
 
-        if (!task.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("You are not allowed to access this task");
+        // Permission Check
+        if (!RoleUtil.isAdmin() && !task.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You are not allowed to modify this task");
         }
 
-        task.setTitle(request.getTitle());
-        task.setDescription(request.getDescription());
-        task.setStatus(request.getStatus());
+        // Safe Updates
+        if (request.getTitle() != null) task.setTitle(request.getTitle());
+        if (request.getDescription() != null) task.setDescription(request.getDescription());
+        if (request.getStatus() != null) task.setStatus(request.getStatus());
         task.setDueDate(request.getDueDate());
+
+        // ADMIN ONLY: Reassign User
+        if (RoleUtil.isAdmin() && request.getAssignedUserId() != null) {
+            User newUser = userRepository.findById(request.getAssignedUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            task.setUser(newUser);
+        }
+
         task.setUpdatedAt(DateUtil.now());
 
         return mapToResponse(taskRepository.save(task));
@@ -115,10 +134,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long taskId, Long userId) {
-
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
 
+        // Allow Admin OR Owner to delete
         if (!RoleUtil.isAdmin() && !task.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("Not allowed to delete this task");
         }

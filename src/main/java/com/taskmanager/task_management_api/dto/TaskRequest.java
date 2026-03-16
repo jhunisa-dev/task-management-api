@@ -21,4 +21,6 @@ public class TaskRequest {
     private TaskStatus status;
 
     private LocalDate dueDate;
+
+    private Long assignedUserId;
 }

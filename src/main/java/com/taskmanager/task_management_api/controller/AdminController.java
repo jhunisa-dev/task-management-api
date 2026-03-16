@@ -1,6 +1,7 @@
 package com.taskmanager.task_management_api.controller;
 
 import com.taskmanager.task_management_api.dto.RegisterRequest;
+import com.taskmanager.task_management_api.dto.UserDto;
 import com.taskmanager.task_management_api.entity.Role;
 import com.taskmanager.task_management_api.entity.User;
 import com.taskmanager.task_management_api.repository.UserRepository;
@@ -23,8 +24,17 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(u -> new UserDto(
+                        u.getId(),
+                        u.getUsername(),
+                        u.getEmail(),
+                        u.getRole().name()
+                ))
+                .toList();
     }
 
     @PostMapping("/create-admin")
@@ -36,5 +46,24 @@ public class AdminController {
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @PostMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void createUser(@RequestBody RegisterRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Explicitly set the role to USER since the Admin is creating them
+        user.setRole(Role.USER);
+        userRepository.save(user);
     }
 }

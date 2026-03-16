@@ -18,4 +18,7 @@ public class TaskResponse {
     private LocalDate dueDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Long assignedUserId;
+    private String assignedUsername;
 }
